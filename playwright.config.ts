@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [["html"], ["json", { outputFile: "test-results/results.json" }]],
 
   use: {
-    baseURL: "https://demo.spreecommerce.org/",
+    baseURL: "https://demo.spreecommerce.org/api/v2/storefront/",
     trace: "on-first-retry",
   },
 
