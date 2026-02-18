@@ -1,14 +1,10 @@
 import { test, expect } from "@playwright/test";
-import {
-  getCart,
-  updateLineItem,
-  createCartWithItem,
-} from "../../../src/api/cart.api";
+import { getCart, updateLineItem, createCartWithItem } from "@api/cart.api";
 import {
   getRandomFrom,
   getPurchasableVariantIds,
-} from "../../../src/helpers/product.helper";
-import { CartResponse } from "../../../src/types/api.types";
+} from "@helpers/product.helper";
+import { CartResponse } from "@src-types/api.types";
 
 // UPDATE FUNCTIONALITY
 test.describe("Cart: Update Functionality", () => {

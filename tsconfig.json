@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@api/*": ["src/api/*"],
+      "@src-types/*": ["src/types/*"],
+      "@helpers/*": ["src/helpers/*"]
+    }
+  }
+}
