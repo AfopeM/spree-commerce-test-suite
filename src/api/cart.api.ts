@@ -1,4 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
+import { CartResponse } from "../types/api.types";
 
 export async function getCart(request: APIRequestContext, token: string) {
   const response = await request.get("cart", {
@@ -58,7 +59,7 @@ export async function updateLineItem(
   lineItemId: string,
   quantity: number,
 ) {
-  const response = await request.delete("cart/set_quantity", {
+  const response = await request.patch("cart/set_quantity", {
     headers: {
       "Content-Type": "application/vnd.api+json",
       "X-Spree-Order-Token": token,
@@ -70,4 +71,18 @@ export async function updateLineItem(
   });
 
   return response;
+}
+
+export async function createCartWithItem(
+  request: APIRequestContext,
+  variantId: string,
+  quantity = 1,
+) {
+  const { token, id } = await createCart(request);
+  await addItemToCart(request, token, variantId, quantity);
+
+  const cart: CartResponse = await getCart(request, token);
+  const lineItemId = cart.data.relationships.line_items.data[0].id;
+
+  return { token, cartId: id, lineItemId };
 }

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:cart": "npx playwright test tests/api/cart.spec.ts"
+    "test": "npx playwright test",
+    "test:cart:add": "npx playwright test tests/api/cart/cart-add.spec.ts",
+    "test:cart:update": "npx playwright test tests/api/cart/cart-update.spec.ts"
   },
   "keywords": [],
   "author": "",

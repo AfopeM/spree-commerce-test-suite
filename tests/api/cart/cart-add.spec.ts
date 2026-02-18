@@ -1,12 +1,12 @@
-import { CartResponse } from "../../src/types/api.types";
 import { test, expect } from "@playwright/test";
-import { createCart, addItemToCart, getCart } from "../../src/api/cart.api";
+import { CartResponse } from "../../../src/types/api.types";
+import { createCart, addItemToCart, getCart } from "../../../src/api/cart.api";
 import {
   getRandomFrom,
   getDifferentIdFrom,
   getOutOfStockVariantIds,
   getPurchasableVariantIds,
-} from "../../src/helpers/product.helper";
+} from "../../../src/helpers/product.helper";
 
 test("Successfully initializes a new cart @smoke", async ({ request }) => {
   const { token, id } = await createCart(request);
@@ -15,6 +15,7 @@ test("Successfully initializes a new cart @smoke", async ({ request }) => {
   expect(id).toBeTruthy();
 });
 
+// ADD FUNCTIONALITY
 test.describe("Cart: Add Functionality", () => {
   let cartToken: string;
 
@@ -86,6 +87,9 @@ test.describe("Cart: Add Functionality", () => {
       response.status(),
       `Succeed in adding item ${id} with zero quantity}`,
     ).toBe(400);
+
+    const cart: CartResponse = await getCart(request, cartToken);
+    expect(cart.data.attributes.item_count).toBe(0);
   });
 
   // NEGATIVE - ADD ITEM THAT IS OUT OF STOCK
@@ -99,5 +103,8 @@ test.describe("Cart: Add Functionality", () => {
       response.status(),
       `Succeed in adding item ${outOfStockId} to cart}`,
     ).toBe(422);
+
+    const cart: CartResponse = await getCart(request, cartToken);
+    expect(cart.data.attributes.item_count).toBe(0);
   });
 });
