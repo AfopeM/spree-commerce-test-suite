@@ -1,6 +1,12 @@
+import { CartResponse } from "../types/api.types";
 import { test, expect } from "@playwright/test";
-import { createCart, addItemToCart, getCart } from "../utils/api.helpers";
-import { CartResponse } from "../utils/types";
+import { createCart, addItemToCart, getCart } from "../utils/cart.api";
+import {
+  getRandomFrom,
+  getDifferentIdFrom,
+  getOutOfStockVariantIds,
+  getPurchasableVariantIds,
+} from "../utils/product.api";
 
 test("Successfully initializes a new cart @smoke", async ({ request }) => {
   const { token, id } = await createCart(request);
@@ -9,7 +15,7 @@ test("Successfully initializes a new cart @smoke", async ({ request }) => {
   expect(id).toBeTruthy();
 });
 
-test.describe("Cart: Add Item", () => {
+test.describe("Cart: Add Functionality", () => {
   let cartToken: string;
 
   test.beforeEach(async ({ request }) => {
@@ -18,34 +24,42 @@ test.describe("Cart: Add Item", () => {
   });
 
   // ADD SINGLE ITEM
-  test("a single item is added to cart", async ({ request }) => {
-    await test.step("add product to cart", async () => {
-      const response = await addItemToCart(request, cartToken, "2125", 1);
-      expect(response.ok(), "Failed to add item to cart").toBeTruthy();
-    });
+  test("adding a single item is added to cart", async ({ request }) => {
+    const id = getRandomFrom(await getPurchasableVariantIds(request));
 
-    await test.step("verify total item count is 1", async () => {
-      const cart: CartResponse = await getCart(request, cartToken);
-      expect(cart.data.attributes.item_count).toBe(1);
-    });
+    const response = await addItemToCart(request, cartToken, id, 1);
+    expect(response.ok(), `Failed to add item ${id} cart`).toBeTruthy();
+
+    const cart: CartResponse = await getCart(request, cartToken);
+    expect(cart.data.attributes.item_count).toBe(1);
   });
 
   // ADD MULTIPLE OF THE SAME ITEM
-  test("multiple of same item are added to cart", async ({ request }) => {
-    await addItemToCart(request, cartToken, "2125", 3);
+  test("adding multiple units of the same item", async ({ request }) => {
+    const id = getRandomFrom(await getPurchasableVariantIds(request));
+
+    const response = await addItemToCart(request, cartToken, id, 3);
+    expect(response.ok(), `Failed to add item ${id} to cart`).toBeTruthy();
 
     const cart: CartResponse = await getCart(request, cartToken);
     expect(cart.data.attributes.item_count).toBe(3);
   });
 
   // ADD MULTIPLE UNIQUE ITEMS
-  test("Multiple unique items are added to cart", async ({ request }) => {
-    await addItemToCart(request, cartToken, "2125", 2);
-    await addItemToCart(request, cartToken, "1424", 1);
+  test("adding multiple unique products", async ({ request }) => {
+    const allIds = await getPurchasableVariantIds(request);
+    const id1 = getRandomFrom(allIds);
+    const id2 = getDifferentIdFrom(allIds, id1);
+
+    const response1 = await addItemToCart(request, cartToken, id1, 2);
+    expect(response1.ok(), `Failed to add item ${id1} to cart`).toBeTruthy();
+
+    const response2 = await addItemToCart(request, cartToken, id2, 1);
+    expect(response2.ok(), `Failed to add item ${id2} to cart`).toBeTruthy();
 
     const cart: CartResponse = await getCart(request, cartToken);
 
-    expect(cart.data.attributes.item_count).toBe(3); // 3 items in total
+    expect(cart.data.attributes.item_count).toBe(3);
     expect(
       cart.data.relationships.line_items.data,
       "Should have 2 unique line items",
@@ -53,18 +67,37 @@ test.describe("Cart: Add Item", () => {
   });
 
   // NEGATIVE - ADD INVALID ITEM
-  test("Invalid item is not added to cart", async ({ request }) => {
+  test("adding an invalid product ID fails", async ({ request }) => {
     const response = await addItemToCart(request, cartToken, "0000", 1);
 
-    expect(response.ok()).toBe(false);
-    expect(response.status()).toBe(404);
+    expect(response.status(), "Succeed in adding item invalid item 0000").toBe(
+      404,
+    );
   });
 
   // NEGATIVE - QUANTITY OF ADDED TO CART IS 0
-  test("Item with zero quantity is not added to cart", async ({ request }) => {
-    const response = await addItemToCart(request, cartToken, "2125", 0);
+  test("cart should ignore add requests with quantity <= 0", async ({
+    request,
+  }) => {
+    const id = getRandomFrom(await getPurchasableVariantIds(request));
 
-    expect(response.ok()).toBe(false);
-    expect(response.status()).toBe(400);
+    const response = await addItemToCart(request, cartToken, id, 0);
+    expect(
+      response.status(),
+      `Succeed in adding item ${id} with zero quantity}`,
+    ).toBe(400);
+  });
+
+  // NEGATIVE - ADD ITEM THAT IS OUT OF STOCK
+  test("out-of-stock products cannot be added to a cart", async ({
+    request,
+  }) => {
+    const outOfStockId = getRandomFrom(await getOutOfStockVariantIds(request));
+
+    const response = await addItemToCart(request, cartToken, outOfStockId, 1);
+    expect(
+      response.status(),
+      `Succeed in adding item ${outOfStockId} to cart}`,
+    ).toBe(422);
   });
 });
