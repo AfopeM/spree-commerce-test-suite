@@ -1,12 +1,12 @@
-import { CartResponse } from "../types/api.types";
+import { CartResponse } from "../../src/types/api.types";
 import { test, expect } from "@playwright/test";
-import { createCart, addItemToCart, getCart } from "../utils/cart.api";
+import { createCart, addItemToCart, getCart } from "../../src/api/cart.api";
 import {
   getRandomFrom,
   getDifferentIdFrom,
   getOutOfStockVariantIds,
   getPurchasableVariantIds,
-} from "../utils/product.api";
+} from "../../src/helpers/product.helper";
 
 test("Successfully initializes a new cart @smoke", async ({ request }) => {
   const { token, id } = await createCart(request);

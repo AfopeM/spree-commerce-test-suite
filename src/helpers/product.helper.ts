@@ -1,20 +1,8 @@
 import { APIRequestContext } from "@playwright/test";
-import { ProductListResponse } from "../types/api.types";
+import { listOfProducts } from "../api/product.api";
 
 let cachedVariantIds: string[] | null = null;
 let cachedOutOfStockVariantIds: string[] | null = null;
-
-export async function listOfProducts(request: APIRequestContext) {
-  const response = await request.get("products", {
-    headers: {
-      "Content-Type": "application/vnd.api+json",
-    },
-  });
-
-  const responseData: ProductListResponse = await response.json();
-
-  return responseData;
-}
 
 export async function getPurchasableVariantIds(request: APIRequestContext) {
   if (cachedVariantIds) return cachedVariantIds;
@@ -25,7 +13,7 @@ export async function getPurchasableVariantIds(request: APIRequestContext) {
     .map((res) => res.relationships.default_variant.data.id);
 
   if (ids.length === 0)
-    throw new Error("No purchasable products found in catalog.");
+    throw new Error("No purchasable products found in catalog");
 
   cachedVariantIds = ids;
   return ids;
@@ -36,11 +24,11 @@ export async function getOutOfStockVariantIds(request: APIRequestContext) {
 
   const response = await listOfProducts(request);
   const ids = response.data
-    .filter((res) => res.attributes.in_stock === false) // Standardized to false
+    .filter((res) => res.attributes.in_stock === false)
     .map((res) => res.relationships.default_variant.data.id);
 
   if (ids.length === 0)
-    throw new Error("No out-of-stock products found in catalog.");
+    throw new Error("No out-of-stock products found in catalog");
 
   cachedOutOfStockVariantIds = ids;
   return ids;
