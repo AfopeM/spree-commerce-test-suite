@@ -11,9 +11,13 @@ export default defineConfig({
 
   retries: process.env.CI ? 2 : 0,
 
-  workers: process.env.CI ? 4 : undefined,
+  workers: process.env.CI ? 4 : 4,
 
-  reporter: [["html"], ["json", { outputFile: "test-results/results.json" }]],
+  reporter: [
+    ["html"],
+    ["list"],
+    ["json", { outputFile: "test-results/results.json" }],
+  ],
 
   use: {
     baseURL: "https://demo.spreecommerce.org/api/v2/storefront/",

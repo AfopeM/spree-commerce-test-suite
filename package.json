@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
-    "test:cart:add": "npx playwright test tests/api/cart/cart-add.spec.ts",
-    "test:cart:update": "npx playwright test tests/api/cart/cart-update.spec.ts"
+    "test:cart:add": "npx playwright test tests/cart/cart-add.spec.ts",
+    "test:cart:update": "npx playwright test tests/cart/cart-update.spec.ts",
+    "test:cart:remove": "npx playwright test tests/cart/cart-remove.spec.ts",
+    "test:cart": "npx playwright test tests/cart",
+    "report": "npx playwright show-report"
   },
   "keywords": [],
   "author": "",

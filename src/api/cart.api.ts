@@ -86,3 +86,18 @@ export async function createCartWithItem(
 
   return { token, cartId: id, lineItemId };
 }
+
+export async function removeLineItem(
+  request: APIRequestContext,
+  token: string,
+  id: string,
+) {
+  const response = await request.delete(`cart/remove_line_item/${id}`, {
+    headers: {
+      "Content-Type": "application/vnd.api+json",
+      "X-Spree-Order-Token": token,
+    },
+  });
+
+  return response;
+}
