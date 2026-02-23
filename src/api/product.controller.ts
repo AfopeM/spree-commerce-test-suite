@@ -1,5 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
-import { ProductListResponse } from "../../src/types/api.types";
+import { ProductListResponse } from "../types/spree.types";
 
 export async function listOfProducts(request: APIRequestContext) {
   const response = await request.get("products", {

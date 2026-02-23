@@ -4,12 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test",
-    "test:cart:add": "npx playwright test tests/cart/cart-add.spec.ts",
-    "test:cart:update": "npx playwright test tests/cart/cart-update.spec.ts",
-    "test:cart:remove": "npx playwright test tests/cart/cart-remove.spec.ts",
-    "test:cart": "npx playwright test tests/cart",
-    "report": "npx playwright show-report"
+    "test": "playwright test",
+    "test:cart": "playwright test tests/cart/",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:negative": "playwright test --grep @negative",
+    "report": "playwright show-report"
   },
   "keywords": [],
   "author": "",

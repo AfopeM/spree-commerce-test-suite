@@ -1,5 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
-import { CartResponse } from "../types/api.types";
+import { CartResponse } from "../types/spree.types";
 
 export async function getCart(request: APIRequestContext, token: string) {
   const response = await request.get("cart", {

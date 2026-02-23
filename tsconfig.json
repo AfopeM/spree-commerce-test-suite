@@ -4,7 +4,7 @@
     "paths": {
       "@api/*": ["src/api/*"],
       "@src-types/*": ["src/types/*"],
-      "@helpers/*": ["src/helpers/*"]
+      "@helpers/*": ["src/utils/*"]
     }
   }
 }

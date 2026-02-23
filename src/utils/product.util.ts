@@ -1,5 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
-import { listOfProducts } from "../api/product.api";
+import { listOfProducts } from "../api/product.controller";
 
 let cachedVariantIds: string[] | null = null;
 let cachedOutOfStockVariantIds: string[] | null = null;
