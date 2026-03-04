@@ -8,7 +8,7 @@ import {
   getRandomFrom,
   getDifferentIdFrom,
   getPurchasableVariantIds,
-} from "@helpers/product.util";
+} from "@utils/api.util";
 import { CartResponse } from "@src-types/spree.types";
 
 // ====================
@@ -18,7 +18,7 @@ test.describe("Update Cart", () => {
   // ==============
   // POSITIVE TESTS
   // ==============
-  test.describe("Positive Scenarios @regression @smoke", () => {
+  test.describe("Positive Scenarios", { tag: "@regression @smoke" }, () => {
     // 1. UPDATE SINGLE ITEM
     test("updates item quantity in the cart", async ({ request }) => {
       const id = getRandomFrom(await getPurchasableVariantIds(request));
@@ -35,7 +35,7 @@ test.describe("Update Cart", () => {
   // ==============
   // NEGATIVE TESTS
   // ==============
-  test.describe("Negative Scenarios @regression @negative", () => {
+  test.describe("Negative Scenarios", { tag: "@regression @negative" }, () => {
     // 2. UPDATE NON-EXISTENT ITEM
     test("fails when updating a non-existent line item", async ({
       request,
@@ -55,7 +55,7 @@ test.describe("Update Cart", () => {
   // ==========
   // EDGE TESTS
   // ==========
-  test.describe("Edge Scenarios @regression @edge", () => {
+  test.describe("Edge Scenarios", { tag: "@regression @edge" }, () => {
     // 3. UPDATE QUANTITY TO ZERO
     test("fails when setting item quantity to zero", async ({ request }) => {
       const id = getRandomFrom(await getPurchasableVariantIds(request));

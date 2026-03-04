@@ -9,7 +9,7 @@ import {
   getRandomFrom,
   getPurchasableVariantIds,
   getDifferentIdFrom,
-} from "@helpers/product.util";
+} from "@utils/api.util";
 import { CartResponse } from "@src-types/spree.types";
 
 // =====================
@@ -19,7 +19,7 @@ test.describe("Remove from Cart", () => {
   // ==============
   // POSITIVE TESTS
   // ==============
-  test.describe("Positive Scenarios @regression @smoke", () => {
+  test.describe("Positive Scenarios", { tag: "@regression @smoke" }, () => {
     // 1. REMOVE SINGLE ITEM
     test("remove line item from cart", async ({ request }) => {
       const id = getRandomFrom(await getPurchasableVariantIds(request));
@@ -36,7 +36,7 @@ test.describe("Remove from Cart", () => {
   // ==============
   // NEGATIVE TESTS
   // ==============
-  test.describe("Negative Scenarios @regression @negative", () => {
+  test.describe("Negative Scenarios", { tag: "@regression @negative" }, () => {
     // 2. DOES NOT REMOVE INVALID LINE ITEMS
     test("reject removal of non-existent line item", async ({ request }) => {
       const { token } = await createCart(request);

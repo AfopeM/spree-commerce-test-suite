@@ -22,8 +22,8 @@ Test coverage is driven by **business impact.** On e-commerce platforms, cart an
 
 | Feature Area        | Business Impact                                  | Priority  | Coverage Rationale                                              |
 | ------------------- | ------------------------------------------------ | :-------: | --------------------------------------------------------------- |
-| **Checkout Flow**   | Direct revenue — any failure stops a purchase    |  🔴 High  | Full purchase path: address → shipping → payment → confirmation |
-| **Cart Operations** | Blocks checkout — broken cart causes abandonment | 🟡 Medium | Add, update, and remove operations including edge cases         |
+| **Checkout Flow**   | Direct revenue (any failure stops a purchase)    |  🔴 High  | Full purchase path: address → shipping → payment → confirmation |
+| **Cart Operations** | Blocks checkout (broken cart causes abandonment) | 🟡 Medium | Add, update, and remove operations including edge cases         |
 
 **Out Of Scope:** Product Catalog, Wishlists, and Admin APIs
 
@@ -102,11 +102,11 @@ npm install
 npm run test
 
 # Run specific test suite
-npm run test test:cart
+npm run test:cart
 
-npm run test test:positive
-npm run test test:negative
-npm run test test:regression
+npm run test:positive
+npm run test:negative
+npm run test:regression
 
 # Run with UI (headed mode)
 npm run test:headed

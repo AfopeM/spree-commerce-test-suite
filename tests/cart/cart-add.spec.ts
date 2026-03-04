@@ -6,7 +6,7 @@ import {
   getDifferentIdFrom,
   getOutOfStockVariantIds,
   getPurchasableVariantIds,
-} from "@helpers/product.util";
+} from "@utils/api.util";
 
 // =================
 // ADD FUNCTIONALITY
@@ -22,7 +22,7 @@ test.describe("Add to Cart", () => {
   // ==============
   // POSITIVE TESTS
   // ==============
-  test.describe("Positive Scenarios @regression @smoke", () => {
+  test.describe("Positive Scenarios", { tag: "@regression @smoke" }, () => {
     let cartToken: string;
 
     test.beforeEach(async ({ request }) => {
@@ -74,7 +74,7 @@ test.describe("Add to Cart", () => {
   // ==============
   // NEGATIVE TESTS
   // ==============
-  test.describe("Negative Scenarios @regression @negative", () => {
+  test.describe("Negative Scenarios", { tag: "@regression @negative" }, () => {
     let cartToken: string;
 
     test.beforeEach(async ({ request }) => {
