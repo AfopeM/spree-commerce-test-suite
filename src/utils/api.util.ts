@@ -1,6 +1,11 @@
 import { APIRequestContext } from "@playwright/test";
-import { listOfProducts } from "../api/product.controller";
+import { listOfProducts } from "@api/product.controller";
+import { createCartWithItem } from "@api/cart.controller";
+import { addShippingAddress } from "@api/checkout.controller";
 
+// =================
+// CART FUNCTIONALITY
+// =================
 let cachedVariantIds: string[] | null = null;
 let cachedOutOfStockVariantIds: string[] | null = null;
 
@@ -46,4 +51,16 @@ export function getDifferentIdFrom(ids: string[], excludedId: string): string {
     );
   }
   return getRandomFrom(filtered);
+}
+
+// ======================
+// CHECKOUT FUNCTIONALITY
+// ======================
+export async function createCartAtAddressState(request: APIRequestContext) {
+  const id = getRandomFrom(await getPurchasableVariantIds(request));
+  const { token } = await createCartWithItem(request, id, 1);
+
+  await addShippingAddress(request, token);
+
+  return { token, cartId: id };
 }
