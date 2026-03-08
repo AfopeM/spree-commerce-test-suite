@@ -1,31 +1,31 @@
 import { APIRequestContext } from "@playwright/test";
+import { createCartAtAddressState } from "@utils/api.util";
 
+// ==============================
+// SHIPPING ADDRESS FUNCTIONALITY
+// ==============================
 interface ShippingAddress {
   firstname: string;
   lastname: string;
   address1: string;
   city: string;
-  phone: string;
-  zipcode: string;
-  state_name: string;
   country_iso: string;
 }
+
+export const DEFAULT_EMAIL = "test@example.com";
 
 export const DEFAULT_SHIPPING_ADDRESS: ShippingAddress = {
   firstname: "Johnny",
   lastname: "Bravo",
   address1: "20 Cooper Square",
   city: "New York",
-  phone: "9175550177",
-  zipcode: "10004",
-  state_name: "NY",
   country_iso: "US",
 };
 
 export async function addShippingAddress(
   request: APIRequestContext,
   token: string,
-  email: string = "test@example.com",
+  email: string = DEFAULT_EMAIL,
   address: ShippingAddress = DEFAULT_SHIPPING_ADDRESS,
 ) {
   const response = await request.patch("checkout?include=shipping_address", {
@@ -76,6 +76,7 @@ export async function selectShippingMethod(
       },
     },
   });
+
   return response;
 }
 
@@ -90,4 +91,101 @@ export async function selectFirstShippingMethod(
   const shippingRateId = shipment.relationships.shipping_rates.data[0].id;
 
   return selectShippingMethod(request, token, shipmentId, shippingRateId);
+}
+
+// =====================
+// PAYMENT FUNCTIONALITY
+// =====================
+export const TEST_CARDS = {
+  SUCCESS: "4111111111111111",
+  DECLINED: "4002",
+};
+
+const DEFAULT_CARD = {
+  // gateway_payment_profile_id: "ABC123",
+  cc_type: "visa",
+  last_digits: "1111",
+  month: "12",
+  year: "2028",
+  name: "Test User",
+  verification_value: "123",
+};
+
+export async function getPaymentMethods(
+  request: APIRequestContext,
+  token: string,
+) {
+  const response = await request.get("checkout/payment_methods", {
+    headers: { "X-Spree-Order-Token": token },
+  });
+
+  return response.json();
+}
+
+export async function addPayment(
+  request: APIRequestContext,
+  token: string,
+  cardNumber: string = TEST_CARDS.SUCCESS,
+) {
+  const paymentMethodsData = await getPaymentMethods(request, token);
+
+  const paymentMethod = paymentMethodsData.data.find(
+    (method: any) =>
+      method.attributes.type.includes("Gateway") ||
+      method.attributes.name.toLowerCase().includes("credit card"),
+  );
+
+  if (!paymentMethod) {
+    throw new Error(
+      "Could not find a Credit Card payment method in the API response.",
+    );
+  }
+
+  const response = await request.patch("checkout", {
+    headers: { "X-Spree-Order-Token": token },
+    data: {
+      order: {
+        payments_attributes: [
+          {
+            payment_method_id: paymentMethod.id,
+            source_attributes: {
+              number: cardNumber,
+              ...DEFAULT_CARD,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  return response;
+}
+
+export async function completeOrder(request: APIRequestContext, token: string) {
+  const response = await request.patch("checkout/complete", {
+    headers: { "X-Spree-Order-Token": token },
+  });
+
+  return response;
+}
+
+export async function createCartAtPaymentState(request: APIRequestContext) {
+  const { token, cartId } = await createCartAtAddressState(request);
+  await selectFirstShippingMethod(request, token);
+
+  await advanceCheckout(request, token);
+
+  return { token, cartId };
+}
+
+// ==============================
+// STATE FUNCTIONALITY
+// ==============================
+export async function advanceCheckout(
+  request: APIRequestContext,
+  token: string,
+) {
+  return await request.patch("checkout/advance", {
+    headers: { "X-Spree-Order-Token": token },
+  });
 }
