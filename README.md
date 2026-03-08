@@ -8,11 +8,11 @@
 
 ## Quick Stats
 
-|                     |                                    |
-| ------------------- | ---------------------------------- |
-| **Automated Tests** | 15 across cart operations          |
-| **Execution Time**  | ~30 seconds (parallel)             |
-| **Tech Stack**      | TypeScript · Playwright · Insomnia |
+|                     |                                                   |
+| ------------------- | ------------------------------------------------- |
+| **Automated Tests** | 26 across cart operations and checkout operations |
+| **Execution Time**  | ~30 seconds (parallel)                            |
+| **Tech Stack**      | TypeScript · Playwright · Postman                 |
 
 ---
 
@@ -31,11 +31,11 @@ Test coverage is driven by **business impact.** On e-commerce platforms, cart an
 
 ## Test Coverage
 
-| Suite                           | Positive | Negative | Edge |     Total     |
-| ------------------------------- | :------: | :------: | :--: | :-----------: |
-| **Cart** (`tests/cart`)         |    5     |    7     |  2   |    **14**     |
-| **Checkout** (`tests/checkout`) |    —     |    —     |  —   | _In Progress_ |
-| **Total**                       |    5     |    7     |  2   |    **14**     |
+| Suite                           | Positive | Negative | Edge | Total  |
+| ------------------------------- | :------: | :------: | :--: | :----: |
+| **Cart** (`tests/cart`)         |    6     |    7     |  2   | **14** |
+| **Checkout** (`tests/checkout`) |    6     |    5     |  —   | **11** |
+| **Total**                       |    12    |    12    |  2   | **26** |
 
 ---
 
@@ -47,6 +47,8 @@ Test coverage is driven by **business impact.** On e-commerce platforms, cart an
 
 **Explicit error contract validation:** The suite distinguishes between `404 Not Found` (resource doesn't exist) and `422 Unprocessable Entity` (business logic failure, e.g. out-of-stock). This boundary matters — front-end error handling depends on getting the right status code to show the right message to the user.
 
+**State factory helpers:** Utilities like `createCartAtAddressState` and `createCartAtPaymentState` encapsulate multi-step setup so individual tests remain focused on the behaviour under test rather than repetitive scaffolding.
+
 ---
 
 ## Project Architecture
@@ -56,18 +58,22 @@ spree-commerce-tests/
 ├── src/
 │   ├── api/                                # API abstraction layer
 │   │   ├── cart.controller.ts
+│   │   ├── checkout.controller.ts
 │   │   └── product.controller.ts
 │   ├── utils/                              # Reusable utilities
-│   │   └── product.util.ts
+│   │   └── api.util.ts
 │   └── types/                              # TypeScript interfaces/types
 │       └── spree.types.ts
-│
+││
 ├── tests/                                  # Test specifications
-│   └── cart/                               # Cart CRUD operations (15 tests)
-│       ├── cart-add.spec.ts
-│       ├── cart-update.spec.ts
-│       └── cart-remove.spec.ts
-│
+│   ├── cart/                               # Cart CRUD operations (15 tests)
+│   │   ├── cart-add.spec.ts
+│   │   ├── cart-update.spec.ts
+│   │   └── cart-remove.spec.ts
+│   └── checkout/                           # Checkout flow (11 tests)
+│       ├── checkout-shipping.spec.ts
+│       └── checkout-payment.spec.ts
+││
 ├── playwright.config.ts                    # Test configuration
 ├── package.json                            # Dependencies
 ├── test-report.md                           # Documentation of results
@@ -103,6 +109,7 @@ npm run test
 
 # Run specific test suite
 npm run test:cart
+npm run test:checkout
 
 npm run test:positive
 npm run test:negative
@@ -123,7 +130,7 @@ npm run report
 | ------------------ | ------------------------ | ------------------------------------ |
 | **Test Framework** | Playwright               | API testing, parallel execution      |
 | **Language**       | TypeScript               | Type-safe test code                  |
-| **API Client**     | Insomnia                 | Manual API exploration and debugging |
+| **API Client**     | Postman                  | Manual API exploration and debugging |
 | **CI/CD**          | GitHub Actions           | Automated test execution             |
 | **API**            | Spree Commerce           | Demo e-commerce platform             |
 | **Reporting**      | Playwright HTML Reporter | Test result visualization            |

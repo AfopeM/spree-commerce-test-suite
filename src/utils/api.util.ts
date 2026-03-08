@@ -15,6 +15,7 @@ export async function getPurchasableVariantIds(request: APIRequestContext) {
   const response = await listOfProducts(request);
   const ids = response.data
     .filter((res) => res.attributes.purchasable === true)
+    .filter((res) => res.attributes.in_stock === true)
     .map((res) => res.relationships.default_variant.data.id);
 
   if (ids.length === 0)

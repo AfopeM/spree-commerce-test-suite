@@ -28,7 +28,7 @@ export async function addShippingAddress(
   email: string = DEFAULT_EMAIL,
   address: ShippingAddress = DEFAULT_SHIPPING_ADDRESS,
 ) {
-  const response = await request.patch("checkout?include=shipping_address", {
+  return await request.patch("checkout?include=shipping_address", {
     headers: { "X-Spree-Order-Token": token },
     data: {
       order: {
@@ -37,7 +37,6 @@ export async function addShippingAddress(
       },
     },
   });
-  return response;
 }
 
 export async function getShippingMethods(
@@ -63,7 +62,7 @@ export async function selectShippingMethod(
   shipmentId: string,
   shippingRateId: string,
 ) {
-  const response = await request.patch("checkout", {
+  return await request.patch("checkout", {
     headers: { "X-Spree-Order-Token": token },
     data: {
       order: {
@@ -76,8 +75,6 @@ export async function selectShippingMethod(
       },
     },
   });
-
-  return response;
 }
 
 export async function selectFirstShippingMethod(
@@ -131,19 +128,18 @@ export async function addPayment(
 
   const paymentMethod = paymentMethodsData.data.find(
     (method: any) =>
-      method.attributes.type.includes("Gateway") ||
+      method.attributes.type.toLowerCase().includes("gateway") ||
       method.attributes.name.toLowerCase().includes("credit card"),
   );
 
   if (!paymentMethod) {
-    throw new Error(
-      "Could not find a Credit Card payment method in the API response.",
-    );
+    throw new Error("Could not find a valid payment method.");
   }
 
-  const response = await request.patch("checkout", {
+  return await request.patch("checkout", {
     headers: { "X-Spree-Order-Token": token },
     data: {
+      return_url: "https://example.com/order-confirmation",
       order: {
         payments_attributes: [
           {
@@ -157,16 +153,12 @@ export async function addPayment(
       },
     },
   });
-
-  return response;
 }
 
 export async function completeOrder(request: APIRequestContext, token: string) {
-  const response = await request.patch("checkout/complete", {
+  return await request.patch("checkout/complete", {
     headers: { "X-Spree-Order-Token": token },
   });
-
-  return response;
 }
 
 export async function createCartAtPaymentState(request: APIRequestContext) {
