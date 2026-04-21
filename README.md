@@ -1,18 +1,21 @@
 # Spree Commerce API Test Automation
 
-**Risk-based API testing suite** for the Spree Commerce e-commerce platform, demonstrating test prioritization, architectural patterns, and CI/CD integration.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-1.40-green)](https://playwright.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%20%7C%2020-brightgreen)](https://nodejs.org/)
 
-**Core Focus:** Revenue-critical checkout flow and cart operations, the features that drive **80% of business value.**
+**Risk-based API testing suite** for the Spree Commerce e-commerce platform, demonstrating test prioritization, architectural patterns, and CI/CD integration. With a focus on **Core Revenue-critical flows** checkout and cart operations, the features that drive **80% of business value.**
 
 ---
 
 ## Quick Stats
 
-|                     |                                                   |
-| ------------------- | ------------------------------------------------- |
-| **Automated Tests** | 26 across cart operations and checkout operations |
-| **Execution Time**  | ~30 seconds (parallel)                            |
-| **Tech Stack**      | TypeScript · Playwright · Postman                 |
+|                     |                                              |
+| ------------------- | -------------------------------------------- |
+| **Automated Tests** | 27 across cart, checkout, and e2e operations |
+| **Prioritization**  | 90% effort on revenue-critical paths         |
+| **Execution Time**  | ~25 seconds (parallel)                       |
+| **Tech Stack**      | TypeScript · Playwright · Postman            |
 
 ---
 
@@ -20,12 +23,12 @@
 
 Test coverage is driven by **business impact.** On e-commerce platforms, cart and checkout failures translate directly to lost revenue, so that's where the suite is focused first.
 
-| Feature Area        | Business Impact                                  | Priority  | Coverage Rationale                                              |
-| ------------------- | ------------------------------------------------ | :-------: | --------------------------------------------------------------- |
-| **Checkout Flow**   | Direct revenue (any failure stops a purchase)    |  🔴 High  | Full purchase path: address → shipping → payment → confirmation |
-| **Cart Operations** | Blocks checkout (broken cart causes abandonment) | 🟡 Medium | Add, update, and remove operations including edge cases         |
-
-**Out Of Scope:** Product Catalog, Wishlists, and Admin APIs
+| Priority        | Feature           | Tests  | Business Impact           | Rationale                    |
+| --------------- | ----------------- | :----: | ------------------------- | ---------------------------- |
+| **🔴 CRITICAL** | Checkout E2E Flow |   1    | Direct revenue generation | If broken, $0 revenue        |
+| **🟠 HIGH**     | Cart Operations   |   15   | Purchase prerequisite     | Can't checkout without cart  |
+| **🟠 HIGH**     | Checkout Steps    |   11   | Revenue-critical path     | Address → Shipping → Payment |
+| **Total**       | -                 | **27** | -                         | -                            |
 
 ---
 
@@ -33,9 +36,12 @@ Test coverage is driven by **business impact.** On e-commerce platforms, cart an
 
 | Suite                           | Positive | Negative | Edge | Total  |
 | ------------------------------- | :------: | :------: | :--: | :----: |
-| **Cart** (`tests/cart`)         |    6     |    7     |  2   | **14** |
+| **E2E** (`tests/e2e`)           |    1     |    -     |  -   | **1**  |
+| **Cart** (`tests/cart`)         |    6     |    7     |  2   | **15** |
 | **Checkout** (`tests/checkout`) |    6     |    5     |  —   | **11** |
-| **Total**                       |    12    |    12    |  2   | **26** |
+| **Total**                       |    13    |    12    |  2   | **27** |
+
+**Out Of Scope:** Product Catalog, Wishlists, and Admin APIs
 
 ---
 
@@ -55,6 +61,8 @@ Test coverage is driven by **business impact.** On e-commerce platforms, cart an
 
 ```
 spree-commerce-tests/
+├── .github/workflows/                      # CI/CD pipeline (GitHub Actions)
+│   └── test.yml
 ├── src/
 │   ├── api/                                # API abstraction layer
 │   │   ├── cart.controller.ts
@@ -64,7 +72,6 @@ spree-commerce-tests/
 │   │   └── api.util.ts
 │   └── types/                              # TypeScript interfaces/types
 │       └── spree.types.ts
-││
 ├── tests/                                  # Test specifications
 │   ├── cart/                               # Cart CRUD operations (15 tests)
 │   │   ├── cart-add.spec.ts
@@ -73,10 +80,10 @@ spree-commerce-tests/
 │   └── checkout/                           # Checkout flow (11 tests)
 │       ├── checkout-shipping.spec.ts
 │       └── checkout-payment.spec.ts
-││
+├── docs/                                   # Documentation
+│   └── test-report.md
 ├── playwright.config.ts                    # Test configuration
 ├── package.json                            # Dependencies
-├── test-report.md                           # Documentation of results
 └── README.md                               # This file
 ```
 
@@ -110,8 +117,9 @@ npm run test
 # Run specific test suite
 npm run test:cart
 npm run test:checkout
+npm run test:e2e
 
-npm run test:positive
+npm run test:smoke
 npm run test:negative
 npm run test:regression
 
